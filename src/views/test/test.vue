@@ -48,6 +48,9 @@ export default {
   },
   mounted() {
     this.getCurBlood();
+    setInterval(() => {
+      this.getCurBlood();
+    }, 30000);
   },
   methods: {
     getCurBlood() {
@@ -77,7 +80,7 @@ export default {
             console.log(err)
           })
         } else {
-          
+
         }
       }).catch(err => {
         console.log(err)
