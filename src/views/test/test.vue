@@ -6,7 +6,15 @@
           <el-col :span="8">
             <div>
               <el-statistic title="时间">
-                <template slot="formatter"> {{ curBlood.date_step }} 分钟前</template>
+                <template slot="formatter">
+                  <el-row>
+                    <el-col> {{ curBlood.date_step }} 分钟前</el-col>
+                  </el-row>
+                  <el-col style="font-size: 12px;color: silver;">
+                    {{ curBlood.date_str }}
+                  </el-col>
+
+                </template>
               </el-statistic>
             </div>
           </el-col>
