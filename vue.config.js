@@ -42,7 +42,7 @@ module.exports = defineConfig({
         }
       },
       '/api': {
-        target: 'http://localhost:8080',
+        target: 'http://localhost:80',
         ws: true,
         changeOrigin: true,
         // pathRewrite: {

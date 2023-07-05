@@ -1,5 +1,36 @@
 <template>
-  <div style="width:100%;height: 500px;" class="map" ref="mapChart"></div>
+  <el-row style="margin: 10px;">
+    <el-col style="padding: 30px;">
+      <div style="height: 70px; box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04)">
+        <el-row :gutter="20" style="padding-top: 10px;">
+          <el-col :span="8">
+            <div>
+              <el-statistic title="时间">
+                <template slot="formatter"> {{ curBlood.date_step }} 分钟前</template>
+              </el-statistic>
+            </div>
+          </el-col>
+          <el-col :span="8">
+            <div>
+              <el-statistic title="血糖">
+                <template slot="formatter"> {{ curBlood.sgv_str }} mmol/L</template>
+              </el-statistic>
+            </div>
+          </el-col>
+          <el-col :span="8">
+            <div>
+              <el-statistic title="趋势">
+                <template slot="formatter"> {{ curBlood.direction_str }}</template>
+              </el-statistic>
+            </div>
+          </el-col>
+        </el-row>
+      </div>
+    </el-col>
+    <el-col>
+      <div style="width:100%;height: 500px;" class="map" ref="mapChart"></div>
+    </el-col>
+  </el-row>
 </template>
 <script>
 
@@ -11,9 +42,49 @@ export default {
       el: null,
       echarts: null,
       myChart: null,
+      curBlood: {},
+      bloods: []
     }
   },
+  mounted() {
+    this.getCurBlood();
+  },
   methods: {
+    getCurBlood() {
+      request({
+        url: "/api/ns/GetCurBloodSugar",
+        method: 'get',
+        params: { serviceName: 'nightscout-template87' },//url参数
+        data: {}//body参数,如果是get则不需要
+      }).then(res => {
+        console.log(res)
+        if (res.success) {
+          this.curBlood = res.response
+          request({
+            url: "/api/ns/GetBloodSugars",
+            method: 'get',
+            params: { serviceName: 'nightscout-template87', day: 0 },//url参数
+            data: {}//body参数,如果是get则不需要
+          }).then(res => {
+            console.log(res)
+            if (res.success) {
+              this.bloods = res.response
+              this.initMapChart();
+            } else {
+              this.$message("获取数据失败:" + res.msg)
+            }
+          }).catch(err => {
+            console.log(err)
+          })
+        } else {
+          this.$message("获取数据失败:" + res.msg)
+        }
+      }).catch(err => {
+        console.log(err)
+      })
+
+
+    },
     initMapChart() {
       this.el = this.$refs.mapChart;
       console.info("this.el", this.el)
@@ -30,7 +101,11 @@ export default {
           text: '小羊Ns'
         },
         tooltip: {
-          trigger: 'axis'
+          trigger: 'axis',
+          // formatter: function (params) {
+          //   console.log(params)
+          //   return params;
+          // }
         },
         legend: {
           data: ['今天', '昨天', '前天', '高低线']
@@ -43,14 +118,18 @@ export default {
         },
         toolbox: {
           feature: {
-             
+
           }
         },
         xAxis: {
           // type: '',
-          data: ['00:00', '03:00', '06:00', '09:00', '12:00', '15:00', '18:00', '21:00', '23:00'],
+          data: this.bloods.map(t => t.date_str),
           axisLabel: {
-            formatter: '{value}'
+            // formatter: '{value}',
+            formatter: function (value) {
+              let t = value.substring(11, 16);
+              return t;
+            }
           },
           boundaryGap: false,//x轴与z轴线对应
           axisLine: { onZero: false },
@@ -84,28 +163,28 @@ export default {
         series: [
           {
             name: '今天',
-            data: [5, 6, 7, 8, 15, 18, 3],
+            data: this.bloods.map(t => t.sgv_str),
             type: 'line',
             smooth: true,
             symbol: "none"
 
           },
-          {
-            name: '昨天',
-            type: 'line',
-            data: [3, 3, 6, 7, 8, 9, 6],
-            type: 'line',
-            smooth: true,
-            symbol: "none"
-          },
-          {
-            name: '前天',
-            type: 'line',
-            data: [6, 9, 8, 7, 6, 3, 3],
-            type: 'line',
-            smooth: true,
-            symbol: "none"
-          },
+          // {
+          //   name: '昨天',
+          //   type: 'line',
+          //   data: [3, 3, 6, 7, 8, 9, 6],
+          //   type: 'line',
+          //   smooth: true,
+          //   symbol: "none"
+          // },
+          // {
+          //   name: '前天',
+          //   type: 'line',
+          //   data: [6, 9, 8, 7, 6, 3, 3],
+          //   type: 'line',
+          //   smooth: true,
+          //   symbol: "none"
+          // },
           {
             name: '高低线',
             type: 'line',
@@ -118,13 +197,13 @@ export default {
                   yAxis: 5,
                   name: "低",
                   lineStyle: { color: "blue" },
-                  label: { formatter: "低" },
+                  label: { formatter: "低(5)" },
                 },
                 {
                   yAxis: 10,
                   name: "高",
                   lineStyle: { color: "red" },
-                  label: { formatter: "高" },
+                  label: { formatter: "高(10)" },
                 },
               ],
               label: {
@@ -183,9 +262,7 @@ export default {
       });
     }
   },
-  mounted() {
-    this.initMapChart();
-  },
+
 };
 </script>
 
