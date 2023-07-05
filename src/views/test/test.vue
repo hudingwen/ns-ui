@@ -1,7 +1,7 @@
 <template>
   <el-row style="margin: 10px;">
-    <el-col style="padding: 30px;">
-      <div style="height: 70px; box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04)">
+    <el-col style="padding: 8px 5px;">
+      <div style="height: 85px; box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04)">
         <el-row :gutter="20" style="padding-top: 10px;">
           <el-col :span="8">
             <div>
@@ -71,13 +71,13 @@ export default {
               this.bloods = res.response
               this.initMapChart();
             } else {
-              this.$message("获取数据失败:" + res.msg)
+
             }
           }).catch(err => {
             console.log(err)
           })
         } else {
-          this.$message("获取数据失败:" + res.msg)
+          
         }
       }).catch(err => {
         console.log(err)
@@ -154,9 +154,9 @@ export default {
           },
           min: 0,
           // min 是最小的值
-          max: 24,
+          max: 20,
           // max 是最大的值
-          splitNumber: 7,
+          splitNumber: 5,
 
           // splitNumber 可以理解为中间多少个标签
         },
