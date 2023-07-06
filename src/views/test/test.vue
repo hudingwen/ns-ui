@@ -8,7 +8,7 @@
               <el-statistic title="时间">
                 <template slot="formatter">
                   <el-row>
-                    <el-col> {{ curBlood.date_step }} 分钟前</el-col>
+                    <el-col style="font-size: 14px;"> {{ curBlood.date_step }} 分钟前</el-col>
                   </el-row>
                   <el-col style="font-size: 12px;color: silver;">
                     {{ curBlood.date_str }}
@@ -21,14 +21,17 @@
           <el-col :span="8">
             <div>
               <el-statistic title="血糖">
-                <template slot="formatter"> {{ curBlood.sgv_str }} mmol/L</template>
+                <template slot="formatter"> <label
+                    :style="{ 'color': (curBlood.sgv_str > 10 || curBlood.sgv_str < 3.9 ? 'red' : 'green'), 'font-weight': 900, 'font-size': '21px' }">{{
+                      curBlood.sgv_str }}</label> <label style="font-size: 14px;">mmol/L</label></template>
               </el-statistic>
             </div>
           </el-col>
           <el-col :span="8">
             <div>
               <el-statistic title="趋势">
-                <template slot="formatter"> {{ curBlood.direction_str }}</template>
+                <template slot="formatter"> <label style="font-size: 21px;">{{ curBlood.direction_str
+                }}</label></template>
               </el-statistic>
             </div>
           </el-col>
@@ -54,7 +57,12 @@ export default {
       day0: [],
       day1: [],
       day2: [],
-      xList: []
+      xList: [],
+      selectLegend: {
+        "今天": true,
+        "前天": false,
+        "昨天": false
+      }
     }
   },
   mounted() {
@@ -62,8 +70,13 @@ export default {
     this.getCurBlood();
     setInterval(() => {
       this.getCurBlood();
-    }, 30000);
-
+    }, 300000);
+    window.onresize = () => {
+      this.myChart.resize();
+    }
+    this.myChart.on('legendselectchanged', (params) => {
+      this.selectLegend = JSON.parse(JSON.stringify(params.selected))
+    })
   },
   methods: {
     getCurBlood() {
@@ -163,7 +176,7 @@ export default {
     show() {
       const option = {
         title: {
-          text: '小羊Ns'
+          text: ''
         },
         tooltip: {
           trigger: 'axis',
@@ -173,6 +186,7 @@ export default {
           // }
         },
         legend: {
+          selected: this.selectLegend,
           data: ['今天', '昨天', '前天']
         },
         grid: {
@@ -203,20 +217,13 @@ export default {
             data: this.xList,
             axisLabel: {
               // formatter: '{value}',
-              //autoSplitNumber: 9,
-              // formatter: function (value) {
-              //   let sub = value.substring(11, 16);
-              //   if (sub === '00:00' || sub === '03:00' || sub === '06:00' || sub === '09:00' || sub === '12:00' || sub === '15:00' || sub === '18:00' || sub === '21:00') {
-              //     return sub;
-              //   } else {
-              //     return '';
-              //   }
-              // },
+              // splitNumber: 5,
+              // nameGap: 50,
               interval: function (index, value) {
                 // 根据某几个数据划分间隔宽度
                 // console.info("value", value, "index", index)
                 let sub = value;//.substring(11, 16);
-                if (sub === '00:00:00' || sub === '03:00:00' || sub === '06:00:00' || sub === '09:00:00' || sub === '12:00:00' || sub === '15:00:00' || sub === '18:00:00' || sub === '21:00:00' || sub === '23:00:00') {
+                if (sub === '00:00:00' || sub === '03:00:00' || sub === '06:00:00' || sub === '09:00:00' || sub === '12:00:00' || sub === '15:00:00' || sub === '18:00:00' || sub === '21:00:00' || sub === '23:59:59') {
                   return true;
                 } else {
                   return false;
@@ -226,7 +233,7 @@ export default {
                 // 判断索引是否为2或4，如果是则显示标签
                 // console.info("params", params, "index", index)
                 let sub = params;//.substring(11, 16);
-                if (sub === '00:00:00' || sub === '03:00:00' || sub === '06:00:00' || sub === '09:00:00' || sub === '12:00:00' || sub === '15:00:00' || sub === '18:00:00' || sub === '21:00:00' || sub === '23:00:00') {
+                if (sub === '00:00:00' || sub === '03:00:00' || sub === '06:00:00' || sub === '09:00:00' || sub === '12:00:00' || sub === '15:00:00' || sub === '18:00:00' || sub === '21:00:00' || sub === '23:59:59') {
                   return sub.substring(0, 5);
                 } else {
                   return null;
@@ -234,52 +241,6 @@ export default {
 
               }
 
-            },
-            boundaryGap: false,//x轴与z轴线对应
-            axisLine: { onZero: false },
-            axisTick: {
-              show: false,
-              alignWithLabel: true
-            },
-            splitLine: {    //网格线
-              lineStyle: {
-                type: 'dashed'    //设置网格线类型 dotted：虚线   solid:实线
-              },
-              show: false //隐藏或显示
-            }
-          },
-          {
-            type: 'category',
-            data: this.day1.map(t => t.date_str),
-            axisLabel: {
-              show: false,
-              // formatter: '{value}',
-              formatter: function (value) {
-                return value.substring(11, 16);
-              }
-            },
-            boundaryGap: false,//x轴与z轴线对应
-            axisLine: { onZero: false },
-            axisTick: {
-              show: false,
-              alignWithLabel: true
-            },
-            splitLine: {    //网格线
-              lineStyle: {
-                type: 'dashed'    //设置网格线类型 dotted：虚线   solid:实线
-              },
-              show: false //隐藏或显示
-            }
-          },
-          {
-            type: 'category',
-            data: this.day2.map(t => t.date_str),
-            axisLabel: {
-              show: false,
-              // formatter: '{value}',
-              formatter: function (value) {
-                return value.substring(11, 16);
-              }
             },
             boundaryGap: false,//x轴与z轴线对应
             axisLine: { onZero: false },
@@ -308,8 +269,6 @@ export default {
           max: 20,
           // max 是最大的值
           splitNumber: 5,
-
-          // splitNumber 可以理解为中间多少个标签
         },
         series: [
           {
