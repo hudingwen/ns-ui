@@ -203,7 +203,7 @@ export default {
             data: this.xList,
             axisLabel: {
               // formatter: '{value}',
-              autoSplitNumber: 9,
+              //autoSplitNumber: 9,
               // formatter: function (value) {
               //   let sub = value.substring(11, 16);
               //   if (sub === '00:00' || sub === '03:00' || sub === '06:00' || sub === '09:00' || sub === '12:00' || sub === '15:00' || sub === '18:00' || sub === '21:00') {
