@@ -22,7 +22,7 @@ service.interceptors.request.use(
         
         //例如,请求带上我们我的token
         //config.headers.Authorization = "Bearer 123456789";
-        console.info("config",config)
+        // console.info("config",config)
 
         //遮罩层
         if(config.showLoading){
@@ -32,7 +32,7 @@ service.interceptors.request.use(
     },
     err => {
         //异常请求,可自行捕获并处理
-        console.info("err",err)
+        // console.info("err",err)
         return Promise.reject(err);
     }
 );
@@ -41,7 +41,7 @@ service.interceptors.request.use(
 //响应拦截
 service.interceptors.response.use(
     response => { 
-        console.log("response",response)
+        // console.log("response",response)
         if(response.config.showLoading){
             response.config.loading.close()
         }
@@ -57,7 +57,7 @@ service.interceptors.response.use(
         return response.data; 
     },
     error => {
-        console.info("error",error)
+        // console.info("error",error)
         if(error.config.showLoading){
             error.config.loading.close()
         }

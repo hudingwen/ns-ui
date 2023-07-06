@@ -1,8 +1,8 @@
 <template>
   <el-row style="margin: 10px;">
     <el-col style="padding: 8px 5px;">
-      <div style="height: 85px; box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04)">
-        <el-row :gutter="20" style="padding-top: 10px;">
+      <div style="height: 90px; box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04)">
+        <el-row :gutter="5" style="padding-top: 10px;">
           <el-col :span="8">
             <div>
               <el-statistic title="时间">
@@ -51,14 +51,19 @@ export default {
       echarts: null,
       myChart: null,
       curBlood: {},
-      bloods: []
+      day0: [],
+      day1: [],
+      day2: [],
+      xList: []
     }
   },
   mounted() {
+    this.initMapChart();
     this.getCurBlood();
     setInterval(() => {
       this.getCurBlood();
     }, 30000);
+
   },
   methods: {
     getCurBlood() {
@@ -68,40 +73,89 @@ export default {
         params: { serviceName: 'nightscout-template87' },//url参数
         data: {}//body参数,如果是get则不需要
       }).then(res => {
-        console.log(res)
+        // console.log(res)
         if (res.success) {
-          this.curBlood = res.response
-          request({
-            url: "/api/ns/GetBloodSugars",
-            method: 'get',
-            params: { serviceName: 'nightscout-template87', day: 0 },//url参数
-            data: {}//body参数,如果是get则不需要
-          }).then(res => {
-            console.log(res)
-            if (res.success) {
-              this.bloods = res.response
-              this.initMapChart();
-            } else {
+          this.curBlood = res.response.curBlood
 
+
+
+          let ls = [];
+          for (let index = 0; index < res.response.day0.length; index++) {
+            let element = res.response.day0[index];
+            ls.push(element.date_time)
+          }
+          for (let index = 0; index < res.response.day1.length; index++) {
+            let element = res.response.day1[index];
+            ls.push(element.date_time)
+          }
+          for (let index = 0; index < res.response.day2.length; index++) {
+            let element = res.response.day2[index];
+            ls.push(element.date_time)
+          }
+          ls = [...new Set(ls)];
+          ls = ls.sort();
+          // console.info("ls", ls)
+          this.xList = ls;
+          let lsDay0 = []
+          for (let index = 0; index < ls.length; index++) {
+            let element = ls[index];
+            let findRow = res.response.day0.find(t => t.date_time === element)
+            if (findRow) {
+              lsDay0.push(findRow)
+            } else {
+              lsDay0.push({ date_time: element, sgv_str: null })
             }
-          }).catch(err => {
-            console.log(err)
-          })
+          }
+
+          let lsDay1 = []
+          for (let index = 0; index < ls.length; index++) {
+            let element = ls[index];
+            let findRow = res.response.day1.find(t => t.date_time === element)
+            if (findRow) {
+              lsDay1.push(findRow)
+            } else {
+              lsDay1.push({ date_time: element, sgv_str: null })
+            }
+          }
+
+          let lsDay2 = []
+          for (let index = 0; index < ls.length; index++) {
+            let element = ls[index];
+            let findRow = res.response.day2.find(t => t.date_time === element)
+            if (findRow) {
+              lsDay2.push(findRow)
+            } else {
+              lsDay2.push({ date_time: element, sgv_str: null })
+            }
+          }
+
+
+
+          this.day0 = lsDay0;
+          this.day1 = lsDay1;
+          this.day2 = lsDay2;
+
+          // this.day0 = res.response.day0
+          // this.day1 = res.response.day1
+          // this.day2 = res.response.day2
+
+          this.show()
+
         } else {
 
         }
       }).catch(err => {
-        console.log(err)
+        this.$alert(err)
       })
 
 
     },
     initMapChart() {
       this.el = this.$refs.mapChart;
-      console.info("this.el", this.el)
+      // console.info("this.el", this.el)
       this.echarts = require("echarts");
       this.myChart = this.echarts.init(this.el);
-      this.show();
+
 
 
 
@@ -119,7 +173,7 @@ export default {
           // }
         },
         legend: {
-          data: ['今天', '昨天', '前天', '高低线']
+          data: ['今天', '昨天', '前天']
         },
         grid: {
           left: '3%',
@@ -132,29 +186,115 @@ export default {
 
           }
         },
-        xAxis: {
-          // type: '',
-          data: this.bloods.map(t => t.date_str),
-          axisLabel: {
-            // formatter: '{value}',
-            formatter: function (value) {
-              let t = value.substring(11, 16);
-              return t;
+        // dataZoom: [
+        //   {
+        //     type: 'slider',//inside
+        //     start: 0,
+        //     end: 300
+        //   },
+        //   {
+        //     start: 0,
+        //     end: 300
+        //   }
+        // ],
+        xAxis: [
+          {
+            type: 'category',
+            data: this.xList,
+            axisLabel: {
+              // formatter: '{value}',
+              autoSplitNumber: 9,
+              // formatter: function (value) {
+              //   let sub = value.substring(11, 16);
+              //   if (sub === '00:00' || sub === '03:00' || sub === '06:00' || sub === '09:00' || sub === '12:00' || sub === '15:00' || sub === '18:00' || sub === '21:00') {
+              //     return sub;
+              //   } else {
+              //     return '';
+              //   }
+              // },
+              interval: function (index, value) {
+                // 根据某几个数据划分间隔宽度
+                // console.info("value", value, "index", index)
+                let sub = value;//.substring(11, 16);
+                if (sub === '00:00:00' || sub === '03:00:00' || sub === '06:00:00' || sub === '09:00:00' || sub === '12:00:00' || sub === '15:00:00' || sub === '18:00:00' || sub === '21:00:00' || sub === '23:00:00') {
+                  return true;
+                } else {
+                  return false;
+                }
+              },
+              formatter: function (params, index) {
+                // 判断索引是否为2或4，如果是则显示标签
+                // console.info("params", params, "index", index)
+                let sub = params;//.substring(11, 16);
+                if (sub === '00:00:00' || sub === '03:00:00' || sub === '06:00:00' || sub === '09:00:00' || sub === '12:00:00' || sub === '15:00:00' || sub === '18:00:00' || sub === '21:00:00' || sub === '23:00:00') {
+                  return sub.substring(0, 5);
+                } else {
+                  return null;
+                }
+
+              }
+
+            },
+            boundaryGap: false,//x轴与z轴线对应
+            axisLine: { onZero: false },
+            axisTick: {
+              show: false,
+              alignWithLabel: true
+            },
+            splitLine: {    //网格线
+              lineStyle: {
+                type: 'dashed'    //设置网格线类型 dotted：虚线   solid:实线
+              },
+              show: false //隐藏或显示
             }
           },
-          boundaryGap: false,//x轴与z轴线对应
-          axisLine: { onZero: false },
-          axisTick: {
-            show: false,
-            alignWithLabel: true
-          },
-          splitLine: {    //网格线
-            lineStyle: {
-              type: 'dashed'    //设置网格线类型 dotted：虚线   solid:实线
+          {
+            type: 'category',
+            data: this.day1.map(t => t.date_str),
+            axisLabel: {
+              show: false,
+              // formatter: '{value}',
+              formatter: function (value) {
+                return value.substring(11, 16);
+              }
             },
-            show: true //隐藏或显示
+            boundaryGap: false,//x轴与z轴线对应
+            axisLine: { onZero: false },
+            axisTick: {
+              show: false,
+              alignWithLabel: true
+            },
+            splitLine: {    //网格线
+              lineStyle: {
+                type: 'dashed'    //设置网格线类型 dotted：虚线   solid:实线
+              },
+              show: false //隐藏或显示
+            }
+          },
+          {
+            type: 'category',
+            data: this.day2.map(t => t.date_str),
+            axisLabel: {
+              show: false,
+              // formatter: '{value}',
+              formatter: function (value) {
+                return value.substring(11, 16);
+              }
+            },
+            boundaryGap: false,//x轴与z轴线对应
+            axisLine: { onZero: false },
+            axisTick: {
+              show: false,
+              alignWithLabel: true
+            },
+            splitLine: {    //网格线
+              lineStyle: {
+                type: 'dashed'    //设置网格线类型 dotted：虚线   solid:实线
+              },
+              show: false //隐藏或显示
+            }
           }
-        },
+        ],
         yAxis: {
           type: 'value',
           splitLine: { //网格线
@@ -174,41 +314,19 @@ export default {
         series: [
           {
             name: '今天',
-            data: this.bloods.map(t => t.sgv_str),
+            data: this.day0.map(t => t.sgv_str),
             type: 'line',
             smooth: true,
-            symbol: "none"
-
-          },
-          // {
-          //   name: '昨天',
-          //   type: 'line',
-          //   data: [3, 3, 6, 7, 8, 9, 6],
-          //   type: 'line',
-          //   smooth: true,
-          //   symbol: "none"
-          // },
-          // {
-          //   name: '前天',
-          //   type: 'line',
-          //   data: [6, 9, 8, 7, 6, 3, 3],
-          //   type: 'line',
-          //   smooth: true,
-          //   symbol: "none"
-          // },
-          {
-            name: '高低线',
-            type: 'line',
-            data: [],
-            smooth: true,
+            symbol: "none",
+            xAxisIndex: 0,
             markLine: {
               symbol: "none", //标线箭头取消
               data: [
                 {
-                  yAxis: 5,
+                  yAxis: 3.9,
                   name: "低",
                   lineStyle: { color: "blue" },
-                  label: { formatter: "低(5)" },
+                  label: { formatter: "低(3.9)" },
                 },
                 {
                   yAxis: 10,
@@ -228,7 +346,33 @@ export default {
                 width: 1,
               },
             }
+
           },
+          {
+            name: '昨天',
+            type: 'line',
+            data: this.day1.map(t => t.sgv_str),
+            type: 'line',
+            smooth: true,
+            symbol: "none",
+            xAxisIndex: 0,
+          },
+          {
+            name: '前天',
+            type: 'line',
+            data: this.day2.map(t => t.sgv_str),
+            type: 'line',
+            smooth: true,
+            symbol: "none",
+            xAxisIndex: 0,
+          },
+          // {
+          //   name: '高低线',
+          //   type: 'line',
+          //   data: [],
+          //   smooth: true,
+
+          // },
 
 
         ],
@@ -266,7 +410,7 @@ export default {
 
 
 
-      console.log("加载中...")
+      // console.log("加载中...")
       this.myChart.setOption(option);
       window.addEventListener("resize", () => {
         this.myChart.resize();
