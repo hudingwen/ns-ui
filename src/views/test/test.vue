@@ -50,13 +50,13 @@
       </div>
     </el-col>
     <el-col>
-      <div style="width:100%;height: 500px;" class="map" ref="mapChart"></div>
+      <div style="width:100%;height: calc(100vh - 260px);" class="map" ref="mapChart"></div>
     </el-col>
     <el-col>
 
       <el-divider content-position="left">{{ curDate }}</el-divider>
-      <p style="margin: 0 15px;text-align: center;">每一次在控制血糖上的成功都是向自己付出的最好回报。</p>
-      <el-divider content-position="right">小羊Ns远程</el-divider>
+      <p style="margin: 0 15px;text-align: center;">{{ curBlood.saying }}</p>
+      <el-divider content-position="right">{{ curBlood.title }}</el-divider>
     </el-col>
   </el-row>
 </template>
@@ -89,7 +89,7 @@ export default {
     this.getCurBlood();
     setInterval(() => {
       this.getCurBlood();
-    }, 300000);
+    }, 305000);
     window.onresize = () => {
       this.myChart.resize();
     }
@@ -106,7 +106,7 @@ export default {
       request({
         url: "/api/ns/GetCurBloodSugar",
         method: 'get',
-        params: { serviceName: 'nightscout-template87' },//url参数
+        params: { serviceName: 'nightscout-template95' },//url参数
         data: {}//body参数,如果是get则不需要
       }).then(res => {
         // console.log(res)
