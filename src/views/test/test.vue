@@ -1,7 +1,7 @@
 <template>
   <el-row style="margin: 10px;">
     <el-col style="padding: 8px 5px;">
-      <div style="height: 90px; box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04)">
+      <div style="height: 85px; box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04)">
         <el-row :gutter="5" style="padding-top: 10px;">
           <el-col :span="8">
             <div>
@@ -11,7 +11,7 @@
                     <el-col style="font-size: 14px;"> {{ curBlood.date_step }} 分钟前</el-col>
                   </el-row>
                   <el-col style="font-size: 12px;color: silver;">
-                    {{ curBlood.date_str }}
+                    {{ curBlood.date_time }}
                   </el-col>
 
                 </template>
@@ -21,16 +21,27 @@
           <el-col :span="8">
             <div>
               <el-statistic title="血糖">
-                <template slot="formatter"> <label
-                    :style="{ 'color': (curBlood.sgv_str > 10 || curBlood.sgv_str < 3.9 ? 'red' : 'green'), 'font-weight': 900, 'font-size': '21px' }">{{
-                      curBlood.sgv_str }}</label> <label style="font-size: 14px;">mmol/L</label></template>
+                <template slot="formatter">
+                  <el-row>
+                    <el-col>
+                      <label
+                        :style="{ 'color': (curBlood.sgv_str > 10 || curBlood.sgv_str < 3.9 ? 'red' : 'green'), 'font-weight': 900, 'font-size': '21px', 'margin-top': '10px' }">{{
+                          curBlood.sgv_str }}</label>
+                    </el-col>
+                    <el-col>
+                      <label style="font-size: 14px;">mmol/L</label>
+                    </el-col>
+                  </el-row>
+
+
+                </template>
               </el-statistic>
             </div>
           </el-col>
           <el-col :span="8">
             <div>
               <el-statistic title="趋势">
-                <template slot="formatter"> <label style="font-size: 21px;">{{ curBlood.direction_str
+                <template slot="formatter"> <label style="margin-top:10px;font-size: 21px;">{{ curBlood.direction_str
                 }}</label></template>
               </el-statistic>
             </div>
@@ -40,6 +51,12 @@
     </el-col>
     <el-col>
       <div style="width:100%;height: 500px;" class="map" ref="mapChart"></div>
+    </el-col>
+    <el-col>
+
+      <el-divider content-position="left">{{ curDate }}</el-divider>
+      <p style="margin: 0 15px;text-align: center;">每一次在控制血糖上的成功都是向自己付出的最好回报。</p>
+      <el-divider content-position="right">小羊Ns远程</el-divider>
     </el-col>
   </el-row>
 </template>
@@ -54,6 +71,8 @@ export default {
       echarts: null,
       myChart: null,
       curBlood: {},
+      curDate: '',
+      curTime: '',
       day0: [],
       day1: [],
       day2: [],
@@ -79,6 +98,10 @@ export default {
     })
   },
   methods: {
+    getDate() {
+      if (this.curBlood.date_str)
+        this.curDate = this.curBlood.date_str.substring(0, 11)
+    },
     getCurBlood() {
       request({
         url: "/api/ns/GetCurBloodSugar",
@@ -89,7 +112,7 @@ export default {
         // console.log(res)
         if (res.success) {
           this.curBlood = res.response.curBlood
-
+          this.getDate()
 
 
           let ls = [];
