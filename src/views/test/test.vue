@@ -50,12 +50,12 @@
       </div>
     </el-col>
     <el-col>
-      <div style="width:100%;height: calc(100vh - 260px);" class="map" ref="mapChart"></div>
+      <div style="width:100%;height: calc(100vh - 270px);" class="map" ref="mapChart"></div>
     </el-col>
     <el-col>
 
       <el-divider content-position="left">{{ curDate }}</el-divider>
-      <p style="margin: 0 15px;text-align: center;">{{ curBlood.saying }}</p>
+      <p style="margin: 0 15px;text-align: center;font-size: 12px;">{{ curBlood.saying }}</p>
       <el-divider content-position="right">{{ curBlood.title }}</el-divider>
     </el-col>
   </el-row>
