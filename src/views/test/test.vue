@@ -130,7 +130,7 @@ export default {
           }
           ls = [...new Set(ls)];
           ls = ls.sort();
-          // console.info("ls", ls)
+          console.info("ls", ls)
           this.xList = ls;
           let lsDay0 = []
           for (let index = 0; index < ls.length; index++) {
@@ -212,12 +212,12 @@ export default {
           selected: this.selectLegend,
           data: ['今天', '昨天', '前天']
         },
-        grid: {
-          left: '3%',
-          right: '4%',
-          bottom: '3%',
-          containLabel: true
-        },
+        // grid: {
+        //   left: '3%',
+        //   right: '3%',
+        //   bottom: '3%',
+        //   containLabel: true
+        // },
         toolbox: {
           feature: {
 
@@ -257,7 +257,7 @@ export default {
                 // console.info("params", params, "index", index)
                 let sub = params;//.substring(11, 16);
                 if (sub === '00:00:00' || sub === '03:00:00' || sub === '06:00:00' || sub === '09:00:00' || sub === '12:00:00' || sub === '15:00:00' || sub === '18:00:00' || sub === '21:00:00' || sub === '23:59:59') {
-                  return sub.substring(0, 5);
+                  return sub.substring(0, 5) + '\r';
                 } else {
                   return null;
                 }
@@ -291,16 +291,11 @@ export default {
           // min 是最小的值
           max: 20,
           // max 是最大的值
-          splitNumber: 5,
+          splitNumber: 6,
         },
         series: [
           {
-            name: '今天',
-            data: this.day0.map(t => t.sgv_str),
             type: 'line',
-            smooth: true,
-            symbol: "none",
-            xAxisIndex: 0,
             markLine: {
               symbol: "none", //标线箭头取消
               data: [
@@ -328,25 +323,33 @@ export default {
                 width: 1,
               },
             }
-
+          },
+          {
+            name: '今天',
+            data: this.day0.map(t => t.sgv_str),
+            type: 'line',
+            smooth: true,
+            symbol: "none",
+            xAxisIndex: 0,
+            connectNulls: true
           },
           {
             name: '昨天',
-            type: 'line',
             data: this.day1.map(t => t.sgv_str),
             type: 'line',
             smooth: true,
             symbol: "none",
             xAxisIndex: 0,
+            connectNulls: true
           },
           {
             name: '前天',
-            type: 'line',
             data: this.day2.map(t => t.sgv_str),
             type: 'line',
             smooth: true,
             symbol: "none",
             xAxisIndex: 0,
+            connectNulls: true
           },
           // {
           //   name: '高低线',
