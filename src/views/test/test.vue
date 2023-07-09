@@ -8,7 +8,8 @@
               <el-statistic title="时间">
                 <template slot="formatter">
                   <el-row>
-                    <el-col style="font-size: 14px;"> {{ curBlood.date_step }} 分钟前</el-col>
+                    <el-col style="font-size: 14px;"> {{ curBlood.date_step }}
+                      分钟前</el-col>
                   </el-row>
                   <el-col style="font-size: 12px;color: silver;">
                     {{ curBlood.date_time }}
@@ -63,7 +64,7 @@
 <script>
 
 import request from '@/request'
-
+var that;
 export default {
   data() {
     return {
@@ -81,7 +82,18 @@ export default {
         "今天": true,
         "前天": false,
         "昨天": false
-      }
+      },
+      spList: [
+        '00:00:00',
+        '03:00:00',
+        '06:00:00',
+        '09:00:00',
+        '12:00:00',
+        '15:00:00',
+        '18:00:00',
+        '21:00:00',
+        '23:59:59'
+      ]
     }
   },
   mounted() {
@@ -96,6 +108,9 @@ export default {
     this.myChart.on('legendselectchanged', (params) => {
       this.selectLegend = JSON.parse(JSON.stringify(params.selected))
     })
+  },
+  created() {
+    that = this;
   },
   methods: {
     getDate() {
@@ -130,7 +145,46 @@ export default {
           }
           ls = [...new Set(ls)];
           ls = ls.sort();
-          console.info("ls", ls)
+
+          let curIndex = 0;
+          let maxCount = 0;
+          //查找填充
+          for (let index = 0; index < this.spList.length; index++) {
+            let row = this.spList[index];
+            let tempIndex = ls.findIndex(t => t === row)
+            
+            let tempMaxCount = tempIndex - curIndex
+            
+            curIndex = tempIndex
+            if (tempMaxCount > maxCount)
+              maxCount = tempMaxCount
+          }
+
+          //填充数据
+          for (let index = 0; index < this.spList.length; index++) {
+            let row = this.spList[index];
+            let tempIndex = ls.findIndex(t => t === row)
+            
+            let tempMaxCount = 0;
+            if (index !== 0) {
+              let lastIndex = ls.findIndex(t => t === this.spList[index - 1])
+              tempMaxCount = tempIndex - lastIndex
+              if (tempMaxCount < maxCount) {
+                let diffCount = maxCount - tempMaxCount
+                for (let dffIdx = 0; dffIdx < diffCount; dffIdx++) {
+                  ls.splice(tempIndex - 1, 0, '缺省');
+
+                }
+              }
+            }
+
+
+          }
+
+
+
+
+
           this.xList = ls;
           let lsDay0 = []
           for (let index = 0; index < ls.length; index++) {
@@ -171,9 +225,6 @@ export default {
           this.day1 = lsDay1;
           this.day2 = lsDay2;
 
-          // this.day0 = res.response.day0
-          // this.day1 = res.response.day1
-          // this.day2 = res.response.day2
 
           this.show()
 
@@ -242,22 +293,24 @@ export default {
               // formatter: '{value}',
               // splitNumber: 5,
               // nameGap: 50,
-              interval: function (index, value) {
+              interval(index, value) {
                 // 根据某几个数据划分间隔宽度
                 // console.info("value", value, "index", index)
                 let sub = value;//.substring(11, 16);
-                if (sub === '00:00:00' || sub === '03:00:00' || sub === '06:00:00' || sub === '09:00:00' || sub === '12:00:00' || sub === '15:00:00' || sub === '18:00:00' || sub === '21:00:00' || sub === '23:59:59') {
-                  return true;
+                let findSp = that.spList.find(t => t === sub)
+                if (findSp) {
+                  return true
                 } else {
-                  return false;
+                  return false
                 }
               },
-              formatter: function (params, index) {
+              formatter(params, index) {
                 // 判断索引是否为2或4，如果是则显示标签
                 // console.info("params", params, "index", index)
                 let sub = params;//.substring(11, 16);
-                if (sub === '00:00:00' || sub === '03:00:00' || sub === '06:00:00' || sub === '09:00:00' || sub === '12:00:00' || sub === '15:00:00' || sub === '18:00:00' || sub === '21:00:00' || sub === '23:59:59') {
-                  return sub.substring(0, 5) + '\r';
+                let findSp = that.spList.find(t => t === sub)
+                if (findSp) {
+                  return findSp.substring(0, 5);
                 } else {
                   return null;
                 }
