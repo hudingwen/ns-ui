@@ -93,35 +93,65 @@ export default {
         '18:00:00',
         '21:00:00',
         '23:59:59'
-      ]
+      ],
+      openid: '',
+      ticket: ''
+
     }
   },
   mounted() {
-    this.initMapChart();
-    this.getCurBlood();
-    setInterval(() => {
+
+    this.openid = this.$route.query.openid
+    this.ticket = this.$route.query.ticket
+    
+    
+    if (this.ticket) {
+      //绑定
+      request({
+        url: "/api/Nightscout/BindQR",
+        method: 'get',
+        params: { openid: this.openid, ticket: this.ticket },//url参数
+        data: {}//body参数,如果是get则不需要
+      }).then(res => {
+
+        if (res.success) {
+          this.$message.success(res.msg)
+          window.location.href = "?openid=" + this.openid 
+        } else {
+          this.$message.error(res.msg)
+        }
+      })
+
+    } else {
+      //查看
+      this.initMapChart();
       this.getCurBlood();
-    }, 305000);
-    window.onresize = () => {
-      this.myChart.resize();
+      setInterval(() => {
+        this.getCurBlood();
+      }, 305000);
+      window.onresize = () => {
+        this.myChart.resize();
+      }
+      this.myChart.on('legendselectchanged', (params) => {
+        this.selectLegend = JSON.parse(JSON.stringify(params.selected))
+      })
     }
-    this.myChart.on('legendselectchanged', (params) => {
-      this.selectLegend = JSON.parse(JSON.stringify(params.selected))
-    })
+
   },
   created() {
     that = this;
   },
   methods: {
+    
     getDate() {
       if (this.curBlood.date_str)
         this.curDate = this.curBlood.date_str.substring(0, 11)
     },
     getCurBlood() {
       request({
-        url: "/api/ns/GetCurBloodSugar",
+        url: "/api/Nightscout/GetCurBloodSugar",
         method: 'get',
-        params: { serviceName: 'nightscout-template95' },//url参数
+        params: { openid: this.openid },//url参数
         data: {}//body参数,如果是get则不需要
       }).then(res => {
         // console.log(res)
@@ -152,9 +182,9 @@ export default {
           for (let index = 0; index < this.spList.length; index++) {
             let row = this.spList[index];
             let tempIndex = ls.findIndex(t => t === row)
-            
+
             let tempMaxCount = tempIndex - curIndex
-            
+
             curIndex = tempIndex
             if (tempMaxCount > maxCount)
               maxCount = tempMaxCount
@@ -164,7 +194,7 @@ export default {
           for (let index = 0; index < this.spList.length; index++) {
             let row = this.spList[index];
             let tempIndex = ls.findIndex(t => t === row)
-            
+
             let tempMaxCount = 0;
             if (index !== 0) {
               let lastIndex = ls.findIndex(t => t === this.spList[index - 1])
@@ -229,10 +259,10 @@ export default {
           this.show()
 
         } else {
-
+          this.$message.error(res.msg)
         }
       }).catch(err => {
-        this.$alert(err)
+        this.$message.error(err)
       })
 
 
