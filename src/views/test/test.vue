@@ -103,8 +103,8 @@ export default {
 
     this.openid = this.$route.query.openid
     this.ticket = this.$route.query.ticket
-    
-    
+
+
     if (this.ticket) {
       //绑定
       request({
@@ -116,7 +116,7 @@ export default {
 
         if (res.success) {
           this.$message.success(res.msg)
-          window.location.href = "?openid=" + this.openid 
+          window.location.href = "?openid=" + this.openid
         } else {
           this.$message.error(res.msg)
         }
@@ -142,7 +142,7 @@ export default {
     that = this;
   },
   methods: {
-    
+
     getDate() {
       if (this.curBlood.date_str)
         this.curDate = this.curBlood.date_str.substring(0, 11)
@@ -183,38 +183,34 @@ export default {
             let row = this.spList[index];
             let tempIndex = ls.findIndex(t => t === row)
 
+
             let tempMaxCount = tempIndex - curIndex
 
             curIndex = tempIndex
             if (tempMaxCount > maxCount)
               maxCount = tempMaxCount
           }
-
           //填充数据
           for (let index = 0; index < this.spList.length; index++) {
+            if (index === 0) continue;
+
             let row = this.spList[index];
             let tempIndex = ls.findIndex(t => t === row)
 
             let tempMaxCount = 0;
-            if (index !== 0) {
-              let lastIndex = ls.findIndex(t => t === this.spList[index - 1])
-              tempMaxCount = tempIndex - lastIndex
-              if (tempMaxCount < maxCount) {
-                let diffCount = maxCount - tempMaxCount
-                for (let dffIdx = 0; dffIdx < diffCount; dffIdx++) {
-                  ls.splice(tempIndex - 1, 0, '缺省');
-
-                }
+            let lastIndex = ls.findIndex(t => t === this.spList[index - 1])
+            tempMaxCount = tempIndex - lastIndex
+            if (tempMaxCount < maxCount) {
+              let diffCount = maxCount - tempMaxCount
+              let addLs = []
+              for (let dffIdx = 0; dffIdx < diffCount; dffIdx++) {
+                addLs.push('缺省')
               }
+              ls.splice(tempIndex, 0, ...addLs);
             }
 
-
           }
-
-
-
-
-
+          
           this.xList = ls;
           let lsDay0 = []
           for (let index = 0; index < ls.length; index++) {
