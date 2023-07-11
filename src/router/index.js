@@ -8,8 +8,18 @@ Vue.use(Router)
 //创建静态路由
 export const staticRoutes = [
   {
+    name:'test1',
     path: '/',
     component: () => import('@/views/test/test'),  //引入vue页面
+    // component: () => import('@/components/HelloWorld'),  //引入vue页面
+    meta: {
+      title: '首页'
+    }
+  },
+  {
+    name:'test2',
+    path: '/mirror',
+    component: () => import('@/views/test/mirror'),  //引入vue页面
     // component: () => import('@/components/HelloWorld'),  //引入vue页面
     meta: {
       title: '首页'

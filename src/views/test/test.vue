@@ -1,6 +1,7 @@
 <template>
   <el-row style="margin: 10px;">
     <el-col style="padding: 8px 5px;">
+      <button @click="test">test</button>
       <div style="height: 85px; box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04)">
         <el-row :gutter="5" style="padding-top: 10px;">
           <el-col :span="8">
@@ -95,54 +96,57 @@ export default {
         '23:59:59'
       ],
       openid: '',
-      ticket: ''
+      ticket: '',
 
     }
   },
   mounted() {
-
-    this.openid = this.$route.query.openid
-    this.ticket = this.$route.query.ticket
-
-
-    if (this.ticket) {
-      //绑定
-      request({
-        url: "/api/Nightscout/BindQR",
-        method: 'get',
-        params: { openid: this.openid, ticket: this.ticket },//url参数
-        data: {}//body参数,如果是get则不需要
-      }).then(res => {
-
-        if (res.success) {
-          this.$message.success(res.msg)
-          window.location.href = "?openid=" + this.openid
-        } else {
-          this.$message.error(res.msg)
-        }
-      })
-
-    } else {
-      //查看
-      this.initMapChart();
-      this.getCurBlood();
-      setInterval(() => {
-        this.getCurBlood();
-      }, 305000);
-      window.onresize = () => {
-        this.myChart.resize();
-      }
-      this.myChart.on('legendselectchanged', (params) => {
-        this.selectLegend = JSON.parse(JSON.stringify(params.selected))
-      })
-    }
-
+    this.getData()
   },
   created() {
     that = this;
   },
   methods: {
+    getData() {
+      this.openid = this.$route.query.openid
+      this.ticket = this.$route.query.ticket
 
+      if (this.ticket) {
+        //绑定
+        request({
+          url: "/api/Nightscout/BindQR",
+          method: 'get',
+          params: { openid: this.openid, ticket: this.ticket },//url参数
+          data: {}//body参数,如果是get则不需要
+        }).then(res => {
+
+          if (res.success) {
+            this.$message.success(res.msg)
+            this.$router.push({ path: '/mirror?openid=' + this.openid })
+          } else {
+            this.$message.error(res.msg)
+          }
+        })
+
+      } else {
+        //查看
+        setInterval(() => {
+          this.getCurBlood();
+        }, 305000);
+        this.initMapChart();
+        this.getCurBlood();
+       
+        window.onresize = () => {
+          this.myChart.resize();
+        }
+        this.myChart.on('legendselectchanged', (params) => {
+          this.selectLegend = JSON.parse(JSON.stringify(params.selected))
+        })
+      }
+    },
+    test() {
+      this.$router.push({ path: '/mirror?openid=' + this.openid })
+    },
     getDate() {
       if (this.curBlood.date_str)
         this.curDate = this.curBlood.date_str.substring(0, 11)
@@ -210,7 +214,7 @@ export default {
             }
 
           }
-          
+
           this.xList = ls;
           let lsDay0 = []
           for (let index = 0; index < ls.length; index++) {
