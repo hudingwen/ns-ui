@@ -131,11 +131,15 @@ export default {
       } else {
         //查看
         setInterval(() => {
-          this.getCurBlood();
+          try {
+            this.getCurBlood();
+          } catch (error) {
+
+          }
         }, 305000);
         this.initMapChart();
         this.getCurBlood();
-       
+
         window.onresize = () => {
           this.myChart.resize();
         }
