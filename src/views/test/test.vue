@@ -1,7 +1,7 @@
 <template>
   <el-row style="margin: 10px;">
     <el-col style="padding: 8px 5px;">
-      <button @click="test">test</button>
+      <!-- <button @click="test">test</button> -->
       <div style="height: 85px; box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04)">
         <el-row :gutter="5" style="padding-top: 10px;">
           <el-col :span="8">
