@@ -275,7 +275,7 @@ export default {
           if (this.curBlood !== null && this.curBlood.date_step !== null) {
             let tempDiff = 5 - this.curBlood.date_step
             if (tempDiff === 0)
-              this.minutes = 5;
+              this.minutes = 1;
             else if (tempDiff > 0) {
               this.minutes = tempDiff;
             } else {
