@@ -99,9 +99,9 @@ export default {
       ],
       openid: '',
       ticket: '',
-      minutes: null,
-      seconds: null,
-      isRequest: false
+      minutes: 0,
+      seconds: 0,
+      isRequest: true
 
     }
   },
@@ -111,10 +111,10 @@ export default {
 
     setInterval(() => {
       if (this.seconds <= 0 && this.isRequest === false) {
-        this.isRequest === true
+        this.isRequest = true
         this.getCurBlood();
       }
-      let tempSecond = this.seconds - 10
+      let tempSecond = this.seconds - 1
       if (tempSecond < 0) {
         this.seconds = 0
       } else {
@@ -124,7 +124,7 @@ export default {
       if (tempDiff !== this.minutes)
         this.curBlood.date_step += 1
       this.minutes = tempDiff
-    }, 10000);
+    }, 1000);
 
   },
   created() {
@@ -277,27 +277,27 @@ export default {
               this.minutes = 1;
             else if (tempDiff > 0) {
               this.minutes = tempDiff;
-              this.seconds = this.minutes * 60
+              this.seconds = tempDiff * 60
             } else {
               this.minutes = 1;
-              this.seconds = this.minutes * 60
+              this.seconds = 1 * 60
             }
           } else {
             this.minutes = 1;
-            this.seconds = this.minutes * 60
+            this.seconds = 1 * 60
           }
         } else {
           this.minutes = 1;
-          this.seconds = this.minutes * 60
+          this.seconds = 1 * 60
           this.$message.error(res.msg)
         }
 
       }).catch(err => {
         this.minutes = 1;
-        this.seconds = this.minutes * 60
+        this.seconds = 1 * 60
         this.$message.error(err)
       }).finally(() => {
-        this.isRequest === false
+        this.isRequest = false
       })
     },
     initMapChart() {
