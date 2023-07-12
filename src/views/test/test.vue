@@ -111,8 +111,10 @@ export default {
     setInterval(() => {
       if (this.isFirst === true) {
         this.isFirst = false;
+        this.isRequest === true
         this.getCurBlood();
       } else if (this.seconds <= 0 && this.isRequest === false) {
+        this.isRequest === true
         this.getCurBlood();
       }
       let tempSecond = this.seconds - 1
@@ -171,7 +173,7 @@ export default {
         this.curDate = this.curBlood.date_str.substring(0, 11)
     },
     getCurBlood() {
-      this.isRequest === true
+      
       request({
         url: "/api/Nightscout/GetCurBloodSugar",
         method: 'get',
@@ -278,20 +280,24 @@ export default {
               this.minutes = 1;
             else if (tempDiff > 0) {
               this.minutes = tempDiff;
+              this.seconds = this.minutes * 60
             } else {
               this.minutes = 1;
+              this.seconds = this.minutes * 60
             }
           } else {
             this.minutes = 1;
+            this.seconds = this.minutes * 60
           }
         } else {
           this.minutes = 1;
+          this.seconds = this.minutes * 60
           this.$message.error(res.msg)
         }
-        this.seconds = this.minutes * 60
+        
       }).catch(err => {
         this.minutes = 1;
-        this.seconds = 60
+        this.seconds = this.minutes * 60
         this.$message.error(err)
       }).finally(() => {
         this.isRequest === false
