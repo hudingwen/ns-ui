@@ -120,7 +120,7 @@ export default {
       } else {
         this.seconds = tempSecond
       }
-      let tempDiff = Math.ceil(this.seconds / 60)
+      let tempDiff = Math.ceil(1.0 * this.seconds / 60)
       if (tempDiff !== this.minutes)
         this.curBlood.date_step += 1
       this.minutes = tempDiff
@@ -170,7 +170,7 @@ export default {
         this.curDate = this.curBlood.date_str.substring(0, 11)
     },
     getCurBlood() {
-      
+
       request({
         url: "/api/Nightscout/GetCurBloodSugar",
         method: 'get',
@@ -291,7 +291,7 @@ export default {
           this.seconds = this.minutes * 60
           this.$message.error(res.msg)
         }
-        
+
       }).catch(err => {
         this.minutes = 1;
         this.seconds = this.minutes * 60
