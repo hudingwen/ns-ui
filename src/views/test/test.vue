@@ -1,7 +1,6 @@
 <template>
   <el-row style="margin: 10px;">
     <el-col style="padding: 8px 5px;">
-      <!-- <button @click="test">test</button> -->
       <div style="height: 85px; box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04)">
         <el-row :gutter="5" style="padding-top: 10px;">
           <el-col :span="8">
@@ -11,11 +10,10 @@
                   <el-row>
                     <el-col style="font-size: 14px;"> {{ curBlood.date_step }}
                       分钟前</el-col>
+                    <el-col style="font-size: 12px;color: silver;">
+                      {{ curBlood.date_time }}
+                    </el-col>
                   </el-row>
-                  <el-col style="font-size: 12px;color: silver;">
-                    {{ curBlood.date_time }}
-                  </el-col>
-
                 </template>
               </el-statistic>
             </div>
@@ -34,8 +32,6 @@
                       <label style="font-size: 14px;">mmol/L</label>
                     </el-col>
                   </el-row>
-
-
                 </template>
               </el-statistic>
             </div>
@@ -43,8 +39,14 @@
           <el-col :span="8">
             <div>
               <el-statistic title="趋势">
-                <template slot="formatter"> <label style="margin-top:10px;font-size: 21px;">{{ curBlood.direction_str
-                }}</label></template>
+                <template slot="formatter">
+                  <el-row>
+                    <el-col> <label style="font-size: 14px;font-weight: 900;">{{ curBlood.direction_str
+                    }}</label></el-col>
+                    <el-col> <label style="font-size: 12px;color: silver;">{{ minutes }} 分后刷新</label></el-col>
+                  </el-row>
+
+                </template>
               </el-statistic>
             </div>
           </el-col>
@@ -97,11 +99,34 @@ export default {
       ],
       openid: '',
       ticket: '',
+      isFirst: true,
+      minutes: null,
+      seconds: null,
+      isRequest: false
 
     }
   },
   mounted() {
-    this.getData()
+    this.getData();
+    setInterval(() => {
+      if (this.isFirst === true) {
+        this.isFirst = false;
+        this.getCurBlood();
+      } else if (this.seconds <= 0 && this.isRequest === false) {
+        this.getCurBlood();
+      }
+      let tempSecond = this.seconds - 1
+      if (tempSecond < 0) {
+        this.seconds = 0
+      } else {
+        this.seconds = tempSecond
+      }
+      let tempDiff = Math.ceil(this.seconds / 60)
+      if (tempDiff !== this.minutes)
+        this.curBlood.date_step += 1
+      this.minutes = tempDiff
+    }, 1000);
+
   },
   created() {
     that = this;
@@ -119,7 +144,6 @@ export default {
           params: { openid: this.openid, ticket: this.ticket },//url参数
           data: {}//body参数,如果是get则不需要
         }).then(res => {
-
           if (res.success) {
             this.$message.success(res.msg)
             this.$router.push({ path: '/mirror?openid=' + this.openid })
@@ -130,16 +154,7 @@ export default {
 
       } else {
         //查看
-        setInterval(() => {
-          try {
-            this.getCurBlood();
-          } catch (error) {
-
-          }
-        }, 305000);
         this.initMapChart();
-        this.getCurBlood();
-
         window.onresize = () => {
           this.myChart.resize();
         }
@@ -156,17 +171,16 @@ export default {
         this.curDate = this.curBlood.date_str.substring(0, 11)
     },
     getCurBlood() {
+      this.isRequest === true
       request({
         url: "/api/Nightscout/GetCurBloodSugar",
         method: 'get',
         params: { openid: this.openid },//url参数
         data: {}//body参数,如果是get则不需要
       }).then(res => {
-        // console.log(res)
         if (res.success) {
           this.curBlood = res.response.curBlood
           this.getDate()
-
 
           let ls = [];
           for (let index = 0; index < res.response.day0.length; index++) {
@@ -253,33 +267,40 @@ export default {
             }
           }
 
-
-
           this.day0 = lsDay0;
           this.day1 = lsDay1;
           this.day2 = lsDay2;
 
-
           this.show()
-
+          if (this.curBlood !== null && this.curBlood.date_step !== null) {
+            let tempDiff = 5 - this.curBlood.date_step
+            if (tempDiff === 0)
+              this.minutes = 5;
+            else if (tempDiff > 0) {
+              this.minutes = tempDiff;
+            } else {
+              this.minutes = 1;
+            }
+          } else {
+            this.minutes = 1;
+          }
         } else {
+          this.minutes = 1;
           this.$message.error(res.msg)
         }
+        this.seconds = this.minutes * 60
       }).catch(err => {
+        this.minutes = 1;
+        this.seconds = 60
         this.$message.error(err)
+      }).finally(() => {
+        this.isRequest === false
       })
-
-
     },
     initMapChart() {
       this.el = this.$refs.mapChart;
-      // console.info("this.el", this.el)
       this.echarts = require("echarts");
       this.myChart = this.echarts.init(this.el);
-
-
-
-
     },
     show() {
       const option = {
