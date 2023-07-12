@@ -99,7 +99,6 @@ export default {
       ],
       openid: '',
       ticket: '',
-      isFirst: true,
       minutes: null,
       seconds: null,
       isRequest: false
@@ -108,16 +107,14 @@ export default {
   },
   mounted() {
     this.getData();
+    this.getCurBlood();
+
     setInterval(() => {
-      if (this.isFirst === true) {
-        this.isFirst = false;
-        this.isRequest === true
-        this.getCurBlood();
-      } else if (this.seconds <= 0 && this.isRequest === false) {
+      if (this.seconds <= 0 && this.isRequest === false) {
         this.isRequest === true
         this.getCurBlood();
       }
-      let tempSecond = this.seconds - 1
+      let tempSecond = this.seconds - 10
       if (tempSecond < 0) {
         this.seconds = 0
       } else {
@@ -127,7 +124,7 @@ export default {
       if (tempDiff !== this.minutes)
         this.curBlood.date_step += 1
       this.minutes = tempDiff
-    }, 1000);
+    }, 10000);
 
   },
   created() {
