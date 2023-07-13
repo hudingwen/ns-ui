@@ -101,13 +101,14 @@ export default {
       ticket: '',
       minutes: 0,
       seconds: 0,
-      isRequest: true
+      isRequest:false
 
     }
   },
   mounted() {
+    this.initMapChart();
     this.getData();
-    this.getCurBlood();
+    
 
     setInterval(() => {
       if (this.seconds <= 0 && this.isRequest === false) {
@@ -153,13 +154,7 @@ export default {
 
       } else {
         //查看
-        this.initMapChart();
-        window.onresize = () => {
-          this.myChart.resize();
-        }
-        this.myChart.on('legendselectchanged', (params) => {
-          this.selectLegend = JSON.parse(JSON.stringify(params.selected))
-        })
+
       }
     },
     test() {
@@ -304,6 +299,12 @@ export default {
       this.el = this.$refs.mapChart;
       this.echarts = require("echarts");
       this.myChart = this.echarts.init(this.el);
+      window.onresize = () => {
+        this.myChart.resize();
+      }
+      this.myChart.on('legendselectchanged', (params) => {
+        this.selectLegend = JSON.parse(JSON.stringify(params.selected))
+      })
     },
     show() {
       const option = {
@@ -502,11 +503,7 @@ export default {
           }
         ]
       };
-
-
-
-
-      // console.log("加载中...")
+      
       this.myChart.setOption(option);
       window.addEventListener("resize", () => {
         this.myChart.resize();
