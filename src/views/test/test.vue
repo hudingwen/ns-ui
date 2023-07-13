@@ -414,14 +414,7 @@ export default {
             smooth: true,
             symbol: "none",
             xAxisIndex: 0,
-            connectNulls: true,
-            itemStyle: {
-              color: function (params) {
-                console.info("params", params)
-                return params.data // 通过 visualMap 的范围设置颜色
-              }
-            }
-
+            connectNulls: true
           },
           {
             name: '昨天',
