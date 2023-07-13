@@ -101,14 +101,14 @@ export default {
       ticket: '',
       minutes: 0,
       seconds: 0,
-      isRequest:false
+      isRequest: false
 
     }
   },
   mounted() {
     this.initMapChart();
     this.getData();
-    
+
 
     setInterval(() => {
       if (this.seconds <= 0 && this.isRequest === false) {
@@ -313,6 +313,8 @@ export default {
         },
         tooltip: {
           trigger: 'axis',
+          // trigger: 'mouse',
+          position: [40, 40]
           // formatter: function (params) {
           //   console.log(params)
           //   return params;
@@ -333,17 +335,17 @@ export default {
 
           }
         },
-        // dataZoom: [
-        //   {
-        //     type: 'slider',//inside
-        //     start: 0,
-        //     end: 300
-        //   },
-        //   {
-        //     start: 0,
-        //     end: 300
-        //   }
-        // ],
+        dataZoom: [
+          {
+            type: 'slider',//inside
+            start: 0,
+            end: 300
+          },
+          {
+            start: 0,
+            end: 300
+          }
+        ],
         xAxis: [
           {
             type: 'category',
@@ -369,11 +371,10 @@ export default {
                 let sub = params;//.substring(11, 16);
                 let findSp = that.spList.find(t => t === sub)
                 if (findSp) {
-                  return findSp.substring(0, 5);
+                  return findSp.substring(0, 2);
                 } else {
                   return null;
                 }
-
               }
 
             },
@@ -407,6 +408,40 @@ export default {
         },
         series: [
           {
+            name: '今天',
+            data: this.day0.map(t => t.sgv_str),
+            type: 'line',
+            smooth: true,
+            symbol: "none",
+            xAxisIndex: 0,
+            connectNulls: true,
+            itemStyle: {
+              color: function (params) {
+                console.info("params", params)
+                return params.data // 通过 visualMap 的范围设置颜色
+              }
+            }
+
+          },
+          {
+            name: '昨天',
+            data: this.day1.map(t => t.sgv_str),
+            type: 'line',
+            smooth: true,
+            symbol: "none",
+            xAxisIndex: 0,
+            connectNulls: true
+          },
+          {
+            name: '前天',
+            data: this.day2.map(t => t.sgv_str),
+            type: 'line',
+            smooth: true,
+            symbol: "none",
+            xAxisIndex: 0,
+            connectNulls: true
+          },
+          {
             type: 'line',
             markLine: {
               symbol: "none", //标线箭头取消
@@ -435,33 +470,6 @@ export default {
                 width: 1,
               },
             }
-          },
-          {
-            name: '今天',
-            data: this.day0.map(t => t.sgv_str),
-            type: 'line',
-            smooth: true,
-            symbol: "none",
-            xAxisIndex: 0,
-            connectNulls: true
-          },
-          {
-            name: '昨天',
-            data: this.day1.map(t => t.sgv_str),
-            type: 'line',
-            smooth: true,
-            symbol: "none",
-            xAxisIndex: 0,
-            connectNulls: true
-          },
-          {
-            name: '前天',
-            data: this.day2.map(t => t.sgv_str),
-            type: 'line',
-            smooth: true,
-            symbol: "none",
-            xAxisIndex: 0,
-            connectNulls: true
           },
           // {
           //   name: '高低线',
@@ -503,7 +511,7 @@ export default {
           }
         ]
       };
-      
+
       this.myChart.setOption(option);
       window.addEventListener("resize", () => {
         this.myChart.resize();
