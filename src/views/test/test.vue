@@ -57,8 +57,7 @@
       <div style="width:100%;height: calc(100vh - 270px);" class="map" ref="mapChart"></div>
     </el-col>
     <el-col>
-
-      <el-divider content-position="left">{{ curDate }}</el-divider>
+      <el-divider content-position="left">{{ curDate }}今日达标率: {{ curBlood.percent }} %</el-divider>
       <p style="margin: 0 15px;text-align: center;font-size: 12px;">{{ curBlood.saying }}</p>
       <el-divider content-position="right">{{ curBlood.title }}</el-divider>
     </el-col>
@@ -307,6 +306,11 @@ export default {
       })
     },
     show() {
+      const lineRed = '#E74C3C'
+      const lineGreen = '#2ECC71'
+      const lineBlue = '#3498DB'
+      const linePurple = '#9B59B6'
+
       const option = {
         title: {
           text: ''
@@ -335,6 +339,38 @@ export default {
 
           }
         },
+        visualMap: [
+          {
+            show: false,
+            type: 'piecewise', // 分段型 visualMap
+            pieces: [
+              { min: 10, max: 100, color: lineRed },
+              { min: 3.9, max: 10, color: lineGreen },
+              { min: 0, max: 3.9, color: lineRed },
+            ],
+            seriesIndex: 0
+          },
+          {
+            show: false,
+            type: 'piecewise', // 分段型 visualMap
+            pieces: [
+              { min: 10, max: 100, color: lineRed },
+              { min: 3.9, max: 10, color: lineBlue },
+              { min: 0, max: 3.9, color: lineRed },
+            ],
+            seriesIndex: 1
+          },
+          {
+            show: false,
+            type: 'piecewise', // 分段型 visualMap
+            pieces: [
+              { min: 10, max: 100, color: lineRed },
+              { min: 3.9, max: 10, color: linePurple },
+              { min: 0, max: 3.9, color: lineRed },
+            ],
+            seriesIndex: 2
+          }
+        ],
         dataZoom: [
           {
             type: 'slider',//inside
@@ -414,7 +450,8 @@ export default {
             smooth: true,
             symbol: "none",
             xAxisIndex: 0,
-            connectNulls: true
+            connectNulls: true,
+            color: lineGreen
           },
           {
             name: '昨天',
@@ -423,7 +460,8 @@ export default {
             smooth: true,
             symbol: "none",
             xAxisIndex: 0,
-            connectNulls: true
+            connectNulls: true,
+            color: lineBlue
           },
           {
             name: '前天',
@@ -432,7 +470,8 @@ export default {
             smooth: true,
             symbol: "none",
             xAxisIndex: 0,
-            connectNulls: true
+            connectNulls: true,
+            color: linePurple
           },
           {
             type: 'line',
