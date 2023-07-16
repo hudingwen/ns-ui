@@ -307,6 +307,7 @@ export default {
     },
     show() {
       const lineRed = '#E74C3C'
+      const lineYellow = '#F4D03F'
       const lineGreen = '#2ECC71'
       const lineBlue = '#3498DB'
       const linePurple = '#9B59B6'
@@ -345,6 +346,7 @@ export default {
             type: 'piecewise', // 分段型 visualMap
             pieces: [
               { min: 10, max: 100, color: lineRed },
+              { min: 9, max: 10, color: lineYellow },
               { min: 3.9, max: 10, color: lineGreen },
               { min: 0, max: 3.9, color: lineRed },
             ],
@@ -355,6 +357,7 @@ export default {
             type: 'piecewise', // 分段型 visualMap
             pieces: [
               { min: 10, max: 100, color: lineRed },
+              { min: 9, max: 10, color: lineYellow },
               { min: 3.9, max: 10, color: lineBlue },
               { min: 0, max: 3.9, color: lineRed },
             ],
@@ -365,6 +368,7 @@ export default {
             type: 'piecewise', // 分段型 visualMap
             pieces: [
               { min: 10, max: 100, color: lineRed },
+              { min: 9, max: 10, color: lineYellow },
               { min: 3.9, max: 10, color: linePurple },
               { min: 0, max: 3.9, color: lineRed },
             ],
