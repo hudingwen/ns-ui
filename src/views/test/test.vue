@@ -346,9 +346,9 @@ export default {
             type: 'piecewise', // 分段型 visualMap
             pieces: [
               { min: 10, max: 100, color: lineRed },
-              { min: 9, max: 10, color: lineYellow },
-              { min: 3.9, max: 10, color: lineGreen },
-              { min: 0, max: 3.9, color: lineRed },
+              { min: 9, max: 9.9, color: lineYellow },
+              { min: 3.9, max: 8.9, color: lineGreen },
+              { min: 0, max: 3.8, color: lineRed },
             ],
             seriesIndex: 0
           },
@@ -357,9 +357,9 @@ export default {
             type: 'piecewise', // 分段型 visualMap
             pieces: [
               { min: 10, max: 100, color: lineRed },
-              { min: 9, max: 10, color: lineYellow },
-              { min: 3.9, max: 10, color: lineBlue },
-              { min: 0, max: 3.9, color: lineRed },
+              { min: 9, max: 9.9, color: lineYellow },
+              { min: 3.9, max: 8.9, color: lineBlue },
+              { min: 0, max: 3.8, color: lineRed },
             ],
             seriesIndex: 1
           },
@@ -368,9 +368,9 @@ export default {
             type: 'piecewise', // 分段型 visualMap
             pieces: [
               { min: 10, max: 100, color: lineRed },
-              { min: 9, max: 10, color: lineYellow },
-              { min: 3.9, max: 10, color: linePurple },
-              { min: 0, max: 3.9, color: lineRed },
+              { min: 9, max: 9.9, color: lineYellow },
+              { min: 3.9, max: 8.9, color: linePurple },
+              { min: 0, max: 3.8, color: lineRed },
             ],
             seriesIndex: 2
           }
