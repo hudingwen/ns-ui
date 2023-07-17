@@ -428,7 +428,7 @@ export default {
               lineStyle: {
                 type: 'dashed'    //设置网格线类型 dotted：虚线   solid:实线
               },
-              show: false //隐藏或显示
+              show: true //隐藏或显示
             }
           }
         ],
