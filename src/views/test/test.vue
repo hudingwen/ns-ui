@@ -442,7 +442,7 @@ export default {
           },
           min: 0,
           // min 是最小的值
-          max: 20,
+          max: 21,
           // max 是最大的值
           splitNumber: 6,
         },
