@@ -10,15 +10,10 @@
   },
   "dependencies": {
     "axios": "^0.27.2",
-    "core-js": "^3.8.3",
     "echarts": "^5.4.0",
-    "echarts-stat": "^1.2.0",
     "element-ui": "^2.15.13",
-    "jquery": "^3.6.3",
     "vue": "^2.6.14",
-    "vue-custom-scrollbar": "^1.4.4",
-    "vue-router": "^3.6.5",
-    "vuex": "^3.6.2"
+    "vue-router": "^3.6.5"
   },
   "devDependencies": {
     "@babel/core": "^7.12.16",

@@ -14,20 +14,12 @@ Vue.use(Element, {
 //添加vue-router
 import router from './router'
 
-//添加vuex
-import store from './store'
-
- 
-//开启模拟测试 
-require('./mock/index');
-
 //引入echart
 import * as echarts from 'echarts'
 Vue.prototype.$echarts = echarts
 
 new Vue({
   router,
-  store,
   render: h => h(App),
 }).$mount('#app')
 

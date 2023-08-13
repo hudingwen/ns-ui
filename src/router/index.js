@@ -15,15 +15,6 @@ export const staticRoutes = [
     meta: {
       title: '首页'
     }
-  },
-  {
-    name:'test2',
-    path: '/mirror',
-    component: () => import('@/views/test/mirror'),  //引入vue页面
-    // component: () => import('@/components/HelloWorld'),  //引入vue页面
-    meta: {
-      title: '首页'
-    }
   }
 ]
 
