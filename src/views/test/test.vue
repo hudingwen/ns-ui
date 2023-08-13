@@ -1,5 +1,8 @@
 <template>
   <el-row style="margin: 10px;">
+    <el-col>
+      <el-divider content-position="left">实时血糖</el-divider>
+    </el-col>
     <el-col style="padding: 8px 5px;">
       <div style="height: 85px; box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04)">
         <el-row :gutter="5" style="padding-top: 10px;">
@@ -54,10 +57,13 @@
       </div>
     </el-col>
     <el-col>
-      <div style="width:100%;height: calc(100vh - 270px);" class="map" ref="mapChart"></div>
+      <el-divider content-position="left">血糖趋势</el-divider>
     </el-col>
     <el-col>
-      <el-divider content-position="left">{{ curDate }}今日达标率: {{ curBlood.percent }} %</el-divider>
+      <div class="map" ref="mapChart"></div>
+    </el-col>
+    <el-col>
+      <el-divider content-position="left">{{ curDate }} 今日达标率: {{ curBlood.percent }} %</el-divider>
       <p style="margin: 0 15px;text-align: center;font-size: 12px;">{{ curBlood.saying }}</p>
       <el-divider content-position="right">{{ curBlood.title }}</el-divider>
     </el-col>
@@ -442,9 +448,9 @@ export default {
           },
           min: 0,
           // min 是最小的值
-          max: 21,
+          max: 18,
           // max 是最大的值
-          splitNumber: 6,
+          splitNumber: 4,
         },
         series: [
           {
@@ -561,6 +567,12 @@ export default {
 <style   scoped>
 .map {
   width: 100%;
-  height: 100%;
+  height: calc(100vh - 450px);
+}
+
+@media screen and (max-height: 670px) {
+  .map {
+    height: calc(100vh - 350px);
+  }
 }
 </style>
