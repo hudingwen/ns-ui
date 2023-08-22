@@ -113,30 +113,29 @@ export default {
   mounted() {
     this.initMapChart();
     this.getData();
-
-
-    setInterval(() => {
-      if (this.seconds <= 0 && this.isRequest === false) {
-        this.isRequest = true
-        this.getCurBlood();
-      }
-      let tempSecond = this.seconds - 1
-      if (tempSecond < 0) {
-        this.seconds = 0
-      } else {
-        this.seconds = tempSecond
-      }
-      let tempDiff = Math.ceil(1.0 * this.seconds / 60)
-      if (tempDiff !== this.minutes)
-        this.curBlood.date_step += 1
-      this.minutes = tempDiff
-    }, 1000);
-
   },
   created() {
     that = this;
   },
   methods: {
+    setWork() {
+      setInterval(() => {
+        if (this.seconds <= 0 && this.isRequest === false) {
+          this.isRequest = true
+          this.getCurBlood();
+        }
+        let tempSecond = this.seconds - 1
+        if (tempSecond < 0) {
+          this.seconds = 0
+        } else {
+          this.seconds = tempSecond
+        }
+        let tempDiff = Math.ceil(1.0 * this.seconds / 60)
+        if (tempDiff !== this.minutes)
+          this.curBlood.date_step += 1
+        this.minutes = tempDiff
+      }, 1000);
+    },
     getData() {
       this.openid = this.$route.query.openid
       this.ticket = this.$route.query.ticket
@@ -151,15 +150,16 @@ export default {
         }).then(res => {
           if (res.success) {
             this.$message.success(res.msg)
-            this.$router.push({ path: '/mirror?openid=' + this.openid })
+            // this.$router.push({ path: '/mirror?openid=' + this.openid })
           } else {
             this.$message.error(res.msg)
           }
+          this.setWork();
         })
 
       } else {
         //查看
-
+        this.setWork();
       }
     },
     test() {
