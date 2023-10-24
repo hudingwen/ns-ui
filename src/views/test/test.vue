@@ -1,63 +1,52 @@
 <template>
-  <el-row style="margin: 10px;">
+  <el-row style="padding: 10px;">
     <el-col>
-      <el-divider content-position="left">实时血糖</el-divider>
+      <el-divider content-position="left"><strong @click="test">实时血糖</strong></el-divider>
     </el-col>
     <el-col style="padding: 8px 5px;">
-      <div style="height: 85px; box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04)">
+      <div style="height: 85px; box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04);border-radius: 5px;">
         <el-row :gutter="5" style="padding-top: 10px;">
           <el-col :span="8">
-            <div>
-              <el-statistic title="时间">
-                <template slot="formatter">
-                  <el-row>
-                    <el-col style="font-size: 14px;"> {{ curBlood.date_step }}
-                      分钟前</el-col>
-                    <el-col style="font-size: 12px;color: silver;">
-                      {{ curBlood.date_time }}
-                    </el-col>
-                  </el-row>
-                </template>
-              </el-statistic>
-            </div>
-          </el-col>
-          <el-col :span="8">
-            <div>
-              <el-statistic title="血糖">
-                <template slot="formatter">
-                  <el-row>
-                    <el-col>
-                      <label
-                        :style="{ 'color': (curBlood.sgv_str > 10 || curBlood.sgv_str < 3.9 ? 'red' : 'green'), 'font-weight': 900, 'font-size': '21px', 'margin-top': '10px' }">{{
-                          curBlood.sgv_str }}</label>
-                    </el-col>
-                    <el-col>
-                      <label style="font-size: 14px;">mmol/L</label>
-                    </el-col>
-                  </el-row>
-                </template>
-              </el-statistic>
-            </div>
-          </el-col>
-          <el-col :span="8">
-            <div>
-              <el-statistic title="趋势">
-                <template slot="formatter">
-                  <el-row>
-                    <el-col> <label style="font-size: 14px;font-weight: 900;">{{ curBlood.direction_str
-                    }}</label></el-col>
-                    <el-col> <label style="font-size: 12px;color: silver;">{{ minutes }} 分后刷新</label></el-col>
-                  </el-row>
+            <el-row style="text-align: center;">
+              <el-col style="height: 21px;font-size: 14px;">时间</el-col>
+              <el-col> <label style="font-size: 12px;height: 21px;">{{ curBlood.date_step }}分钟前</label></el-col>
+              <el-col>
 
-                </template>
-              </el-statistic>
-            </div>
+                <label style="font-size: 12px;color: silver;height: 21px;"> {{ curBlood.date_time }}</label>
+              </el-col>
+            </el-row>
+          </el-col>
+          <el-col :span="8">
+            <el-row style="text-align: center;">
+              <el-col style="height: 21px;font-size: 14px;">血糖</el-col>
+              <el-col>
+                <label
+                  :style="{ 'color': (curBlood.sgv_str > 10 || curBlood.sgv_str < 3.9 ? 'red' : 'green'), 'font-weight': 900, 'font-size': '21px', 'margin-top': '10px' }">{{
+                    curBlood.sgv_str }}</label>
+              </el-col>
+              <el-col>
+                <label style="font-size: 12px;">mmol/L</label>
+              </el-col>
+            </el-row>
+          </el-col>
+          <el-col :span="8">
+            <el-row style="text-align: center;">
+              <el-col style="height: 21px;font-size: 14px;">趋势</el-col>
+              <el-col>
+                <label style="font-size: 12px;font-weight: 1000;height: 21px;font-family: 宋体;">{{
+                  curBlood.direction_str }}</label>
+              </el-col>
+              <el-col>
+                <label style="font-size: 12px;color: silver;height: 21px;">{{ minutes }} 分后刷新</label>
+                <label class="mycycle" style="margin-left: 5px;margin-top: 10px;" v-loading="true"></label>
+              </el-col>
+            </el-row>
           </el-col>
         </el-row>
       </div>
     </el-col>
     <el-col>
-      <el-divider content-position="left">血糖趋势</el-divider>
+      <el-divider content-position="left"><strong>血糖趋势</strong></el-divider>
     </el-col>
     <el-col>
       <div class="map" ref="mapChart"></div>
@@ -65,7 +54,7 @@
     <el-col>
       <el-divider content-position="left">{{ curDate }} 今日达标率: {{ curBlood.percent }} %</el-divider>
       <p style="margin: 0 15px;text-align: center;font-size: 12px;">{{ curBlood.saying }}</p>
-      <el-divider content-position="right">{{ curBlood.title }}</el-divider>
+      <el-divider content-position="right"><strong>{{ curBlood.title }}</strong></el-divider>
     </el-col>
   </el-row>
 </template>
@@ -146,7 +135,9 @@ export default {
           url: "/api/Nightscout/BindQR",
           method: 'get',
           params: { openid: this.openid, ticket: this.ticket },//url参数
-          data: {}//body参数,如果是get则不需要
+          data: {},//body参数,如果是get则不需要
+          showLoading: true
+
         }).then(res => {
           if (res.success) {
             this.$message.success(res.msg)
@@ -163,7 +154,7 @@ export default {
       }
     },
     test() {
-      this.$router.push({ path: '/mirror?openid=' + this.openid })
+
     },
     getDate() {
       if (this.curBlood.date_str)
@@ -175,7 +166,8 @@ export default {
         url: "/api/Nightscout/GetCurBloodSugar",
         method: 'get',
         params: { openid: this.openid },//url参数
-        data: {}//body参数,如果是get则不需要
+        data: {},//body参数,如果是get则不需要
+        showLoading: true
       }).then(res => {
         if (res.success) {
           this.curBlood = res.response.curBlood
@@ -225,7 +217,7 @@ export default {
               let diffCount = maxCount - tempMaxCount
               let addLs = []
               for (let dffIdx = 0; dffIdx < diffCount; dffIdx++) {
-                addLs.push('缺省')
+                addLs.push('-')
               }
               ls.splice(tempIndex, 0, ...addLs);
             }
@@ -565,6 +557,18 @@ export default {
 </script>
 
 <style   scoped>
+* {
+  font-family: 黑体;
+  font-weight: 600;
+}
+.mycycle >>> .el-loading-spinner .circular{
+  height: 21px ;
+  width: 21px ;
+}
+.mycycle >>> .el-loading-spinner{
+  margin-top: -10px ;
+}
+
 .map {
   width: 100%;
   height: calc(100vh - 450px);

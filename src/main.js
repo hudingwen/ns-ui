@@ -4,18 +4,21 @@ import App from './App.vue'
 Vue.config.productionTip = false
 
 //添加element-ui
-import Element from 'element-ui'
-//import '/excel/assets/styles/element-variables.scss'
-import 'element-ui/lib/theme-chalk/index.css';
-Vue.use(Element, {
-  size: 'mini' // 设置全局字体大小
-})
+
+// css样式还是需要全部引入
+import 'element-ui/lib/theme-chalk/index.css'
+import element from './element/index'
+Vue.use(element)
 
 //添加vue-router
 import router from './router'
 
 //引入echart
-import * as echarts from 'echarts'
+// import * as echarts from 'echarts'
+// Vue.prototype.$echarts = echarts
+
+// 引入echarts
+import echarts from "./echarts/index";
 Vue.prototype.$echarts = echarts
 
 new Vue({

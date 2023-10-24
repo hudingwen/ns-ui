@@ -8,6 +8,7 @@ function resolve(dir) {
 }
  
 module.exports = defineConfig({
+  productionSourceMap: false,//去除map文件
   transpileDependencies: true,
   // 关闭Eslint语法检查
   lintOnSave:false,
@@ -42,7 +43,7 @@ module.exports = defineConfig({
         }
       },
       '/api': {
-        target: 'http://localhost:80',
+        target: 'http://localhost:9291',
         ws: true,
         changeOrigin: true,
         // pathRewrite: {
